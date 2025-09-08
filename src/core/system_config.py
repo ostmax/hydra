@@ -1,3 +1,4 @@
+# src/core/system_config.py
 """
 Hydra System Configuration - Автоматическое определение возможностей железа
 """
@@ -49,8 +50,13 @@ class SystemConfig:
             # CPU
             self.cpu_cores = psutil.cpu_count(logical=False) or 1
             self.logical_cores = psutil.cpu_count(logical=True) or 1
+            
+            # Исправление: конвертируем MHz в GHz
             cpu_freq = psutil.cpu_freq()
-            self.cpu_frequency = cpu_freq.current if cpu_freq else 0
+            if cpu_freq and cpu_freq.current:
+                self.cpu_frequency = cpu_freq.current / 1000  # Convert MHz to GHz
+            else:
+                self.cpu_frequency = 0
             
             # GPU
             self.has_gpu, self.gpu_info = self._detect_gpu()
